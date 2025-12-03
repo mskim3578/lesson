@@ -1,0 +1,8 @@
+ss = '123'
+ss = 'Aa123'
+ss = 'Aa'
+ss = 'AA'
+ss = 'aa'
+ss = '     '
+ss = '  aa   '
+ss = '  Aa   '
