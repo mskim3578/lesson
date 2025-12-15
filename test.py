@@ -1,5 +1,8 @@
 
 
+url = "http://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/"
+
+
 
 
 ###### 예외 처리:예측가능한 오류 발생시 정상처리
