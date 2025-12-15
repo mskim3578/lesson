@@ -2,7 +2,20 @@
 
 url = "http://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/"
 
-
+'''
+1 - fixed acidity : 주석산농도
+2 - volatile acidity : 아세트산농도
+3 - citric acid : 구연산농도
+4 - residual sugar : 잔류당분농도
+5 - chlorides : 염화나트륨농도
+6 - free sulfur dioxide : 유리 아황산 농도
+7 - total sulfur dioxide : 총 아황산 농도
+8 - density : 밀도
+9 - pH : ph
+10 - sulphates : 황산칼륨 농도
+11 - alcohol : 알코올 도수
+12 - quality (score between 0 and 10) : 와인등급
+'''
 
 
 ###### 예외 처리:예측가능한 오류 발생시 정상처리
