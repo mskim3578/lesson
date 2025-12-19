@@ -1,3 +1,13 @@
+print(left_max,left_min)
+    left=(left_max-left_min)/3 
+    
+    ax1.set_ylim(left_min-left, left_max+left)    
+
+
+# 차트 폭조정
+    right=(right_max-right_min)/4
+    print(right_max,right_min, right)
+    ax2.set_ylim(right_min, right_max*3) 
 
 
 url = "http://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/"
