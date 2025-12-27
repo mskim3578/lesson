@@ -15,6 +15,17 @@ plt.rc("font",family="Malgun Gothic")   # 한글 프린트
 
 
 
+plt.figure(figsize = (7, 7))
+sns.heatmap(feacorr, annot = False, cmap = 'Blues')
+plt.xlabel('predicted label', fontsize = 15)
+plt.ylabel('true label', fontsize = 15)
+plt.show()
+
+
+
+
+
+=======================================================
 print(left_max,left_min)
     left=(left_max-left_min)/3 
     
