@@ -121,6 +121,27 @@ R2 Score (결정계수): 0.9971
 
 
 
+# target과 회기선 시각화
+plt.figure(figsize=(8, 6))
+plt.scatter(y_test, y_pred, alpha=0.5)
+plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--')
+plt.xlabel('target')
+plt.ylabel('Predicted')
+plt.title('Actual vs Predicted')
+plt.show()   
+
+
+# target과 예측의 비교
+tx=range(len(y_test))
+plt.figure(figsize=(8, 6))
+plt.plot(tx,y_test,   label='y_test')
+plt.plot(tx,y_pred,  label='y_pred')
+#plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--')
+plt.xlabel('target')
+plt.ylabel('Predicted')
+plt.legend()
+
+
 
 
 
