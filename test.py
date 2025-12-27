@@ -1,4 +1,28 @@
 
+def RandomForestRegressorFun():
+    ''' 
+   Mean Squared Error: 8.0281
+   R2 Score (결정계수): 0.8911
+
+    '''
+    # 4. 모델 생성 및 학습 (Random Forest)
+    model = RandomForestRegressor(n_estimators=100, random_state=42)
+    model.fit(X_train, y_train)
+    
+    # 5. 예측 및 평가
+    y_pred = model.predict(X_test)
+    mse = mean_squared_error(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
+    print('RandomForestRegressorFun')
+    print(f"Mean Squared Error: {mse:.4f}")
+    print(f"R2 Score (결정계수): {r2:.4f}")
+    regChart(y_pred, 'RandomForestRegressorFun')
+
+
+
+
+
+
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 
