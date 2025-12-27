@@ -10,6 +10,8 @@ from sklearn.metrics import mean_squared_error, r2_score
 
 
 
+plt.rcParams['axes.unicode_minus'] = False  #chart에 마이너스 프린트 
+plt.rc("font",family="Malgun Gothic")   # 한글 프린트   
 
 
 
