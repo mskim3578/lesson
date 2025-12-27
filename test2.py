@@ -69,4 +69,23 @@ pre_process(sheetindex)  # 전처리
 print(sheetname)
 print(number_df.columns)
 
+# 2. 상삼각 행렬(Upper triangle)만 선택 (중복 제거)
+# 행렬에서 대각선을 기준으로 **오른쪽 위(Upper)**에 있는 값들만 1(True)로 남기고, 나머지는 0(False)으로 만듭니다.
+upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
+
+# 3. 상관계수가 0.9 이상인 컬럼들 찾기
+to_drop = [column for column in upper.columns if any(upper[column] > 0.9)]
+
+print(f"삭제 권장 피쳐 (중복 정보): {to_drop}")
+
+# 4. 데이터프레임에서 제거
+X_filtered = tdf.drop(columns=to_drop)
+
+#  annot = True, fmt = '.2f',
+plt.figure(figsize = (7, 7))
+sns.heatmap(X_filtered.corr().abs(), cmap = 'Blues')
+plt.xlabel('predicted label', fontsize = 15)
+plt.ylabel('true label', fontsize = 15)
+plt.show()
+
     
