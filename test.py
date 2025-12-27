@@ -8,7 +8,27 @@ def  regChart(y_pred, title):
     plt.title(title)
     plt.show()
 
+def LinearRegressionFun():
+    '''
+    평균 제곱근 오차 (RMSE): 4.9520
+    결정 계수 (R2 Score): 0.6675
+    '''
 
+   
+    model = LinearRegression()
+    model.fit(X_train, y_train)
+    
+    # 4. 예측 수행
+    y_pred = model.predict(X_test)
+    
+    # 5. 모델 평가
+    mse = mean_squared_error(y_test, y_pred)
+    rmse = np.sqrt(mse)
+    r2 = r2_score(y_test, y_pred)
+    print('LinearRegressionFun')
+    print(f"평균 제곱근 오차 (RMSE): {rmse:.4f}")
+    print(f"결정 계수 (R2 Score): {r2:.4f}")
+    regChart(y_pred, 'LinearRegressionFun')
 
 
 def RandomForestRegressorFun():
