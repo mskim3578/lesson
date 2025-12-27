@@ -1,3 +1,15 @@
+def  regChart(y_pred, title):
+    # 6. 실제값 vs 예측값 시각화 model에따라 다르다 
+    plt.figure(figsize=(10, 6))
+    plt.scatter(y_test, y_pred, alpha=0.3)
+    plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--', lw=2)
+    plt.xlabel("Actual Price")
+    plt.ylabel("Predicted Price")
+    plt.title(title)
+    plt.show()
+
+
+
 
 def RandomForestRegressorFun():
     ''' 
