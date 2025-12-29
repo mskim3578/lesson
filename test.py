@@ -1,3 +1,6 @@
+ col3 = [' Test No.', ' Coordinate', ' Soft Bin', ' Hard Bin', ' Time[s]', ' Result', ' Fail Item'] 
+
+
 def  regChart(y_pred, title):
     # 6. 실제값 vs 예측값 시각화 model에따라 다르다 
     plt.figure(figsize=(10, 6))
