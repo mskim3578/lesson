@@ -78,3 +78,28 @@ def set_loaddata():
     df_all_t=df_all_t.ffill() 
     df_all_t=df_all_t.convert_dtypes()	# 자료마다 type변경을 한다
     all_df = df_all_t.select_dtypes(include='number') 
+
+# 고상관 피처 자동 제거
+def highcorr_pro(target, threshold):
+    # 상관계수가 0.9 이상인 피처들 중 하나를 삭제
+   
+    tdf = all_df.drop(columns=[target])  # target은 정리 되면 않된다
+    corr_matrix = tdf.corr().abs()
+    upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
+    # 삭제할 컬럼 이름 추출
+    to_drop = [column for column in upper.columns if any(upper[column] > threshold)]
+    print(f"#### highcorr_pro: 삭제될 고상관 피처 개수: {len(to_drop)} ")
+    return to_drop
+   
+
+# target과 상관계수가 임계점 이하인 피쳐     
+def targetcorr_pro(target, low_threshold):
+    # Target 변수와의 상관계수만 추출하여 정렬
+    corr_matrix = all_df.corr().abs()
+    
+    target_corr = corr_matrix[target].sort_values(ascending=False)     # target과의 상관계수
+    # 특정 임계값(예: 0.1) 이상의 피처만 선택
+    to_drop = target_corr[target_corr < low_threshold].index.tolist()
+    print(f"#### targetcorr_pro: 삭제될 저연관 피처 개수: {len(to_drop)} ")
+    return to_drop
+    
