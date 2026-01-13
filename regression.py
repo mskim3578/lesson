@@ -23,6 +23,12 @@ from xgboost import XGBRegressor
 from lightgbm import LGBMRegressor
 # pip install xgboost lightgbm 
 
+
+# %%  렛유인 project1 function
+
+plt.rcParams['axes.unicode_minus'] = False  #chart에 마이너스 프린트 
+plt.rc("font",family="Malgun Gothic")   # 한글 프린트   
+
 models = {
     "LinearRegression": LinearRegression(),
     "Ridge": Ridge(alpha=1.0),
@@ -32,10 +38,4 @@ models = {
     "XGBoost": XGBRegressor(n_estimators=100, learning_rate=0.1, random_state=42),
     "LightGBM": LGBMRegressor(n_estimators=100, learning_rate=0.1, random_state=42)
 }
-
-# %%  렛유인 project1 function
-
-plt.rcParams['axes.unicode_minus'] = False  #chart에 마이너스 프린트 
-plt.rc("font",family="Malgun Gothic")   # 한글 프린트   
-
 
