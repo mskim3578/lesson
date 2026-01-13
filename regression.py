@@ -103,3 +103,62 @@ def targetcorr_pro(target, low_threshold):
     print(f"#### targetcorr_pro: 삭제될 저연관 피처 개수: {len(to_drop)} ")
     return to_drop
     
+
+def select_target(target, highcorr, targetcorr):  
+    global all_df, model_df, all_col, tdf
+    all_col=  all_df.columns.to_list()   
+    to_drop=set()
+    #  다중공선성 제거
+    to_drop.update(highcorr_pro(target, highcorr))  
+    to_drop.update(targetcorr_pro(target, targetcorr))
+    to_select=list(set(all_col).difference(to_drop))
+    
+    print(f'{target} --->  선택 피쳐 : {to_select}')
+    ### 3  예측
+    tdf=all_df[to_select]
+    #   XGBoost  column name에 [,],<가 있으면 않된다 
+    tdf.columns = [
+        str(col).replace('[', '_').replace(']', '_').replace('<', '_') 
+        for col in tdf.columns
+    ]
+    
+    target=target.replace('[', '_').replace(']', '_').replace('<', '_') 
+    # 전체 r2 chart
+    model_rep=[]
+    for regmodel in models:    
+        mse, r2=predict_pro(tdf, target, regmodel)
+        model_rep.append([regmodel,mse,r2])
+        
+
+
+   
+
+    # 1. 그래프 그리기
+    model_df=pd.DataFrame(model_rep, columns=['model','mse', 'r2'])
+    model_df=model_df.sort_values(by='r2', ascending=False)
+    x_range=range(len(models))
+    labels=[ x for x in models]
+    plt.figure(figsize=(10, 6))
+    # plt.plot(x_range, model_df['r2'].values, marker='o', linestyle='-', color='b')
+    plt.bar(x_range, model_df['r2'].values, color='b', edgecolor='black', linewidth=0.5, width=0.7)
+    # 2. x축 눈금 설정
+    plt.xticks(x_range, labels, rotation=45, ha='right')
+    plt.ylim(model_df['r2'].min()-0.1, model_df['r2'].max()+0.1)
+    # 3. 핵심: 직선 위에 r[0](모델 이름) 또는 r[1](값) 표시하기
+    for i, r in enumerate(model_df['r2'].to_list()):
+        # plt.text(x좌표, y좌표, 출력할내용)
+        # y좌표에 약간의 오프셋(예: +0.01)을 주면 점 바로 위에 글자가 뜹니다.
+        plt.text(i, r + 0.002, f'{r:.4f}  ', 
+                 fontsize=9, 
+                 ha='center',    # 가로 정렬: 중앙
+                 va='bottom',    # 세로 정렬: 하단 (점 위에 떠 있게 함)
+                 fontweight='bold')
+
+    plt.title(f"{target} R2 Scores")
+    plt.xlabel("Models")
+    plt.ylabel("R2 Score")
+    plt.tight_layout()
+    plt.show()
+
+
+  
