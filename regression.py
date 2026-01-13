@@ -161,4 +161,62 @@ def select_target(target, highcorr, targetcorr):
     plt.show()
 
 
+              
+# 예측         
+def predict_pro(tdf, target_col, regmodel) :    
+    global X_train, X_test, y_train, y_test
+    corr_matrix = tdf.corr().abs()
+  
+    upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
+   
+    plt.figure(figsize = (7, 7))
+    plt.title(f'{target_col} : {regmodel}')
+    sns.heatmap(upper, annot = False, fmt = '.2f',cmap = 'Blues')
+    plt.show()
+    
+      
+    
+    features = tdf.columns.drop(target_col)  # 피쳐 컬럼
+    target = target_col    # target컬럼
+    X_features = features
+    X = tdf[X_features]
+    y = tdf[target]
+    # 3. 학습용/테스트용 데이터 분리
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # 4. 모델 생성 및 학습 (Random Forest)
+    
+    # model = RandomForestRegressor(n_estimators=100, random_state=42)
+    model = models[regmodel]
+    model.fit(X_train, y_train)
+
+    # 5. 예측 및 평가
+    y_pred = model.predict(X_test)
+    mse = mean_squared_error(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
+    
+    print(f"{regmodel}-{target_col} ---> Mean Squared Error: {mse:.4f}")
+    print(f"{regmodel}-{target_col} ---> R2 Score (결정계수): {r2:.4f}")
+    plt.figure(figsize=(8, 6))
+    plt.scatter(y_test, y_pred, alpha=0.5)
+    plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--')
+    plt.xlabel('target')
+    plt.ylabel('Predicted')
+    plt.title(f'{target_col}  : {regmodel}')
+    plt.show()   
+
+
+    # target과 예측의 비교
+    tx=range(len(y_test))
+    plt.figure(figsize=(8, 6))
+    plt.scatter(tx,y_test,   label='y_test')
+    plt.scatter(tx,y_pred,  label='y_pred')
+    #plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--')
+    plt.xlabel('target')
+    plt.ylabel('Predicted')
+    plt.legend()
+    plt.title(f'{target_col} :  : {regmodel}')
+    plt.show()   
+    return mse, r2
+  
   
