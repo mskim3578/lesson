@@ -21,3 +21,15 @@ from sklearn.tree import DecisionTreeRegressor
 
 from xgboost import XGBRegressor
 from lightgbm import LGBMRegressor
+# pip install xgboost lightgbm 
+
+models = {
+    "LinearRegression": LinearRegression(),
+    "Ridge": Ridge(alpha=1.0),
+    "Lasso": Lasso(alpha=0.1),
+    "DecisionTree": DecisionTreeRegressor(max_depth=5, random_state=42),
+    "RandomForest": RandomForestRegressor(n_estimators=100, random_state=42),
+    "XGBoost": XGBRegressor(n_estimators=100, learning_rate=0.1, random_state=42),
+    "LightGBM": LGBMRegressor(n_estimators=100, learning_rate=0.1, random_state=42)
+}
+
