@@ -218,5 +218,15 @@ def predict_pro(tdf, target_col, regmodel) :
     plt.title(f'{target_col} :  : {regmodel}')
     plt.show()   
     return mse, r2
+
+# %%  main process
+
+set_loaddata()  # 5개의 엑셀 파일을 한개의 데이터 프레임으로 저장
+
+select_target('IdsatN_S_[㎂/㎛]', 0.9, 0.2)
+
+select_target('BIN1_Prime', 0.9, 0.2)  
+
+
   
   
