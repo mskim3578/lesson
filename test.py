@@ -2,7 +2,11 @@ import pandas as pd
 
 import matplotlib.pyplot as plt 
 import numpy as np
+plt.rcParams['font.family'] = 'Malgun Gothic'   # Windows
 
+
+# 마이너스 깨짐 방지
+plt.rcParams['axes.unicode_minus'] = False
 
 def sample_scatter():  
     fig=plt.figure(figsize=(10, 8))
