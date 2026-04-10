@@ -1,3 +1,19 @@
+
+  
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
+from xgboost import XGBClassifier
+from lightgbm import LGBMClassifier
+
+
+
+  
+  
+  
+  
   models = {
     # 1. 선형 및 확률 기반 모델
     "Logistic Regression": LogisticRegression(max_iter=1000, random_state=42),
