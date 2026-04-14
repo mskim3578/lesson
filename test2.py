@@ -1,3 +1,42 @@
+from sklearn.linear_model import LinearRegression, Ridge, Lasso, ElasticNet
+from sklearn.ensemble import RandomForestRegressor
+from xgboost import XGBRegressor
+from lightgbm import LGBMRegressor
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+
+
+
+
+
+
+
+  models = {
+    "Linear Regression": LinearRegression(),
+    "Ridge (L2)": Ridge(alpha=1.0),
+    "Lasso (L1)": Lasso(alpha=0.1),
+    "ElasticNet": ElasticNet(alpha=0.1, l1_ratio=0.5),
+    "Random Forest": RandomForestRegressor(n_estimators=100, random_state=42),
+    "XGBoost": XGBRegressor(n_estimators=100, learning_rate=0.1, random_state=42),
+    "LightGBM": LGBMRegressor(n_estimators=100, random_state=42)
+    }
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
