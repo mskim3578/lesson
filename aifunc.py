@@ -259,9 +259,9 @@ def linear_model(df, target):
           # 예측
           y_pred = model.predict(X_test)      
           # 성능 지표 계산
-          mae = mean_absolute_error(y_test, y_pred)
-          mse = mean_squared_error(y_test, y_pred)
-          rmse = np.sqrt(mse)
+          mae = mean_absolute_error(y_test, y_pred) #MAE (Mean Absolute Error, 평균 절대 오차)
+          mse = mean_squared_error(y_test, y_pred) 
+          rmse = np.sqrt(mse)  #RMSE (Root Mean Squared Error, 평균 제곱근 오차)
           r2 = r2_score(y_test, y_pred)      
           # 결과 저장
           results.append({
@@ -345,9 +345,6 @@ def binary_predict(df, target):
     print(f"Precision: {precision:.4f}")
     print(f"Recall: {recall:.4f}")
     print(f"F1 Score: {f1:.4f}")    #F1-Score는 정밀도와 재현율을 결합한 지표입니다.
-      
-    
-    
     df_cm = pd.DataFrame(cm)
     return df_cm, df_anormal
 # %%    
@@ -355,7 +352,33 @@ def binary_predict(df, target):
 # df_results=binary_model(df_ai, 'Depo_THK')    
 # df_results.iloc[:, []]
 
-
+# %%
+def linear_predict(df, target):    
+    results = joblib.load('model/linearmodel_results.pkl')
+    model=results[6]['model']  
+    scaler=results[6]['scaler']   
+    name=results[6]['Model명']
+    y=df[target]   
+    
+    # 뒤의 2개의 컬럼 ['Depo_THK', 'Particle']
+    feature_cols = df[df.columns[:-4]].select_dtypes(include='number').columns.tolist()
+    
+    
+    
+    X_scaled=scaler.transform(df[feature_cols])    
+    y_pred=model.predict(X_scaled)
+    
+    # 성능 지표 계산
+    mae = mean_absolute_error(df[target], y_pred)
+    mse = mean_squared_error(df[target], y_pred)
+    rmse = np.sqrt(mse)
+    r2 = r2_score(df[target], y_pred)
+    df_linear = df.copy()
+    df_linear['pred']=y_pred
+    df_linear=df_linear[df_linear[target]!=df_linear['pred']]
+    print(len(df_linear),"===========")
+    return df_linear[[target, 'pred']]
+    
 
 
 
