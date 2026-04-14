@@ -31,3 +31,40 @@ models = {
         )
     
     }
+
+  tn, fp, fn, tp = cm.ravel()
+    
+    # 혼동 행렬의 각 요소를 다음과 같이 정의할 때:
+    # TP (True Positive): 양성을 양성으로 맞게 예측
+    # TN (True Negative): 음성을 음성을 맞게 예측
+    # FP (False Positive): 음성을 양성으로 틀리게 예측 (1종 오류)
+    # FN (False Negative): 양성을 음성으로 틀리게 예측 (2종 오류)
+        
+    
+    
+    # 공식 적용
+    accuracy = (tp + tn) / (tp + tn + fp + fn)
+    precision = tp / (tp + fp)
+    recall = tp / (tp + fn)
+    f1 = 2 * (precision * recall) / (precision + recall)
+    
+    print(f'{name}')
+    print(f"Accuracy: {accuracy:.4f}")
+    print(f"Precision: {precision:.4f}")
+    print(f"Recall: {recall:.4f}")
+    print(f"F1 Score: {f1:.4f}")    #F1-Score는 정밀도와 재현율을 결합한 지표입니다.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
