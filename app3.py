@@ -31,7 +31,8 @@ def main():
         "📈 Target과 상관계수",      
         "분류 모델",  
         "유/불량 확인",  
-        "회귀 모델"]
+        "회귀 모델",
+        "예상 target 값"]
        )
     if menu == "AI Data 검색"  :
       st.subheader("AI Data 검색") 
@@ -105,7 +106,12 @@ def main():
         df_results, fig=ai.linear_model(df_ai, target)      
         st.dataframe(df_results) 
         st.pyplot(fig)
-
+        
+    elif menu == "예상 target 값":          
+        target = st.radio("Target을 선택 하세요:", ['Depo_THK','Particle'], horizontal=True,index=0)
+        df_linear=ai.linear_predict(df_ai, target)        
+        st.dataframe(df_linear)
+         
 
 if __name__ == "__main__":
     
