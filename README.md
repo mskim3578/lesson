@@ -1,5 +1,3 @@
-# 문제지 
-https://docs.google.com/document/d/1GNWgok-pSRR5k9lpWcOcQtsyO7J3O85yVJH4qPw_p1I/edit?usp=sharing
 
 
 
