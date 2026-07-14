@@ -1,4 +1,22 @@
 
+def send_discord(msg):
+    
+
+    webhook_url = "https://discord.com/api/webhooks/1525755958708670624/yC4rrqVdDZP8K6DuUdrjkFnwWRohDl38reTerV3xJcdw_fIL1Fql9xFb1xkiQIix4aCO"
+    data = {
+        "content": msg,
+       
+    }
+    
+    response = requests.post(webhook_url, json=data)
+    
+    if response.status_code == 204:
+        print("메시지 전송 성공!")
+    else:
+        print(f"실패 코드: {response.status_code}")
+
+
+    =============================================
     
     elif menu == menus[10]:
         t_recipe=df_recipe.reset_index()
