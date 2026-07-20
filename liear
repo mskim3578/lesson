@@ -1,4 +1,30 @@
-    
+
+  fig = plt.figure(figsize=(10,30))  # (width, height)
+    count=1
+    for row in range(len(df_results)) :
+        plt.subplot(4, 3, count)
+        count +=1
+        # 산점도 그리기
+        rows=df_results.iloc[row]
+        
+        plt.scatter(x=rows['y_test'], y=rows['y_pred'], alpha=0.5)
+        
+        # 기준선 (y=x) 그리기
+        line_coords = [y_test.min(), y_test.max()]
+        plt.plot(line_coords, line_coords, color='red', linestyle='--', lw=2, label='Perfect Prediction')
+        
+        plt.xlabel('Actual Values (y_test)')
+        plt.ylabel('Predicted Values (y_pred)')
+        plt.title(f"{target}:{rows['Model명']}[{rows['R2 Score']:.6f}]")
+        plt.legend()
+        plt.grid(True)
+        
+    plt.tight_layout()
+
+
+
+
+=======================================
     models = {
      # 1. 기본 선형 회귀 (기준점 설정용, 규제 없음)
      "LinearRegression": LinearRegression(),
