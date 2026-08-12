@@ -144,3 +144,36 @@ Notes:
 strong multicollinearity or other numerical problems.
 
 '''
+########################  matplot ex
+import pandas as pd
+df_age=pd.read_csv('data_folder/age.csv', encoding='cp949',
+                   thousands=",", index_col=0)
+
+# 1. columns 확인
+df_age.columns
+cols_10= df_age.columns[3:13]
+df_age.info()
+
+df_10=df_age[cols_10]
+df_10.info()
+
+
+
+
+#2.  모든컬럼의 내용을  1세, 2세..... 로 수정 하세요
+new_col = [ x.split('_')[2] for x in cols_10]
+df_10.columns=new_col
+
+plt.bar(range(10), df_10.sum())
+plt.show()
+
+#3. x : 1 ~10, x col
+
+'''
+<class 'pandas.DataFrame'>
+Index: 3910 entries, 서울특별시  (1100000000) to 제주특별자치도 서귀포시 예래동(5013062000)
+Columns: 103 entries, 2025년06월_계_총인구수 to 2025년06월_계_100세 이상
+dtypes: int64(103)
+memory usage: 3.3 MB
+'''
+
