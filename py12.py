@@ -151,7 +151,7 @@ raw_y = [[i % 2] for i in range(100)]
 
 # Dataset 인스턴스화
 dataset = CustomDataset(raw_x, raw_y)
-
+len(dataset)
 # DataLoader 인스턴스화
 dataloader = DataLoader(
     dataset=dataset,     # 불러올 Dataset 객체
