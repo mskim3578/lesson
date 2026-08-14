@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 # pip install matplotlib
 
-# %%  경사 하강법, 역전파(backpropagation)
+# %%  경사 하강법, 역전파(backpropagation)   ##########################################
 # 
 # 1. 가상 데이터
 np.random.seed(42)
@@ -80,7 +80,7 @@ plt.show()
 
 
 
-# %%  bachnormalization
+# %%  bachnormalization     ##########################################
 import tensorflow as tf
 from tensorflow.keras import layers, models
 
@@ -111,7 +111,7 @@ output = model(dummy_input)
 print("\n출력 형태:", output.shape) # (8, 10)
 
 
-# %%  dataset dataloader
+# %%  dataset dataloader     ##########################################
 import torch
 # pip install torch
 from torch.utils.data import Dataset, DataLoader
@@ -174,7 +174,7 @@ for epoch in range(epochs):
     for batch_idx, (batch_x, batch_y) in enumerate(dataloader):
         print(f"Batch {batch_idx + 1:2d} | Input Shape: {list(batch_x.shape)} | Target Shape: {list(batch_y.shape)}")
         
-# %%   deep ensemble 
+# %%   deep ensemble     ##########################################
 
 # 효율성이 좋은 몇개의 모델을 함께 정용하는 모델을 만든다
 
@@ -254,7 +254,7 @@ print(f"Recall    : {recall_score(y_test, y_ensemble_pred):.4f}")
 print(f"F1-Score  : {f1_score(y_test, y_ensemble_pred):.4f}")
 
 
-# %%    vgg
+# %%    vgg    ##########################################
 # 2. 이미지 읽기
 import cv2
 img = cv2.imread("output/face_origin.jpg")
