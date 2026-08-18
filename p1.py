@@ -9,15 +9,7 @@ from PIL import Image
 import numpy as np
 
 
-@st.cache_data
-def get_model():
-    """모든 외부 파일을 읽고 결합 및 전처리를 수행하여 리턴합니다."""
-    
-    with st.spinner('데이터 세트를 구성 중입니다...'):
-       loaded_model = load_model('model/numberMnist.keras')
-    return loaded_model 
 
-model=get_model()
 
 # 1. 페이지 설정 
 st.set_page_config(page_title="Streamlit", layout='wide')
