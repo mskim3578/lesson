@@ -1,3 +1,25 @@
+
+
+  ''' 
+    ---  지워야 하는 feature
+    Depo_THK: POST THK AVG, POST PC, Particle
+    Particle: POST PC, POST THK AVG, Depo_THK
+    
+    ----- 살려두고 학습에 사용해야 하는 컬럼 (Features):
+    PRE PC (공정 전 데이터이므로 사용 가능)
+    PRE THK AVG (공정 전 데이터이므로 사용 가능)
+    RF Power, Precursor flow rate, Chamber pressure 등의 순수 공정 센서 데이터
+    ''' 
+
+
+
+
+
+
+
+
+
+
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import IsolationForest
 from sklearn.decomposition import PCA
