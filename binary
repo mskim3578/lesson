@@ -1,3 +1,31 @@
+ results=[]
+    for name, model in models.items():
+        model.fit(X_train_scaled, y_train)     # 학습  
+        y_pred = model.predict(X_test_scaled)  # 예측
+        acc = accuracy_score(y_test, y_pred)     # 성능 지표 계산
+        pre = precision_score(y_test, y_pred)
+        rec = recall_score(y_test, y_pred)
+        f1  = f1_score(y_test, y_pred)        
+        # 결과 저장
+        results.append({
+            "Model명": name,            "model" : model,
+            "scaler" : scaler,            "Accuracy": acc,  
+            "Precision": pre, 
+            "Recall": rec,    
+            "F1-Score": f1 , #정밀도(Precision)와 재현율(Recall)의 조화로운 평균값
+            "y_pred" :  y_pred,
+            "feature_cols" : feature_cols  })
+        print(name, '예측불량', np.sum(y_pred == 0), '실제 분량',np.sum(y_test == 0) )   # 예측 불량
+        # 3. 결과 테이블 생성 및 출력
+        #F1-Score는 정밀도와 재현율을 결합한 지표입니다.
+        #F1-Score는 1(또는 100%)에 가까울수록 모델의 성능이 좋다고 판단
+    df_results = pd.DataFrame(results).sort_values(by='F1-Score', ascending=False)
+    df_results = df_results.reset_index(drop=True)
+    print(df_results)
+
+
+
+
 
 
   ''' 
