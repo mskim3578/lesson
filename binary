@@ -174,6 +174,34 @@ def binary_model(df, target):
     df_results = pd.DataFrame(results).sort_values(by='F1-Score', ascending=False)
     df_results = df_results.reset_index(drop=True)
     print(df_results)
+     
+    fig = plt.figure(figsize=(10,30))  # (width, height)
+    count=1
+    for row in range(len(df_results)) :    
+        t_pred=df_results.loc[row]['y_pred']
+        t_name=df_results.loc[row]['Model명']
+   
+        plt.subplot(6, 2, count)
+        cm = confusion_matrix(y_test, t_pred) 
+        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
+                    xticklabels=['Fault (0)', 'Normal (1)'], 
+                    yticklabels=['Fault (0)', 'Normal (1)'])
+        plt.title('Confusion Matrix:'+t_name)
+        plt.xlabel('Predicted')
+        plt.ylabel('Actual')      
+        
+        plt.subplot(6, 2, count+1) 
+        plt.hist(x=y_test, alpha=0.5, color='b', label="실제"+str(np.sum(y_test == 0))+"/"+str(np.sum(y_test == 1)))
+        plt.hist(x=y_pred+0.25, alpha=0.5, color='r', label="예측"+str(np.sum(t_pred == 0))+"/"+str(np.sum(t_pred == 1)))
+        plt.xlabel('Actual Values (y_test)')
+        plt.ylabel('Predicted Values (y_pred)')
+        plt.title(t_name)
+        plt.legend()
+        plt.grid(True)        
+        count +=2 
+    plt.tight_layout()
+    plt.show()
+    
     
     
     
