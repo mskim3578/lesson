@@ -167,8 +167,10 @@ def main():
     elif menu == menus[4]: 
         st.session_state.clear()
         target = st.radio("Target을 선택 하세요:", ['Depo_THK','Particle'], horizontal=True,index=0) 
-        head_01=["전체 데이터 중 맞게 맞춘 비율", "실제_불량/예측_불량", 
-                 "예측_불량/실제_불량","정밀도(Precision)와 재현율(Recall)의 조화평균값"]
+        #################
+        head_01=["전체 데이터 중 맞게 맞춘 비율", "예측한 불량 중 실제 불량인 비율", 
+                 "실제 불량 중 모델이 불량으로 맞춘 비율","정밀도(Precision)와 재현율(Recall)의 조화평균값"]
+        #####################
         # F1_score = 2 * (precision * recall)/(precision + recall)
         head_df = pd.DataFrame([list(head_01)], columns=["Accuracy","Precision","Recall","F1-Score"])    
                
