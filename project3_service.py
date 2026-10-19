@@ -261,7 +261,209 @@ def binary_predict(df, target):
 
 '''
 binary_predict(df_all, 'Depo_THK')
-'''    
+''' 
+
+# %%
+def linear_model(df, target):
+    # 1. 회귀 모델 딕셔너리 생성   
+    
+    models = {
+     # 1. 기본 선형 회귀 (기준점 설정용, 규제 없음)
+     "LinearRegression": LinearRegression(),
+     
+     # 2. L2 규제 회귀 (모든 피처를 유지하되, 계수 크기를 줄여 과적합 방지)
+     "Ridge(L2)": Ridge(
+         alpha=10.0  # 데이터가 5,000개로 적은 편이므로 규제 강도를 살짝 높여(1.0 -> 10.0) 일반화 성능 확보
+     ),
+     
+     # 3. L1 규제 회귀 (중요하지 않은 피처의 가중치를 0으로 만들어 자동 변수 선택)
+     "Lasso(L1)": Lasso(
+         alpha=1.0   # 피처가 너무 많을 때 효과적이며, 불필요한 노이즈 변수 제거에 도움
+     ),
+     
+     # 4. 혼합 규제 (L1과 L2의 장점을 절반씩 결합)
+     "ElasticNet": ElasticNet(
+         alpha=1.0, 
+         l1_ratio=0.5
+     ),
+     
+     # 5. 배깅 앙상블 회귀 (이상치 노이즈에 강함)
+     "RandomForestRegressor": RandomForestRegressor(
+         n_estimators=100,
+         max_depth=6,          # 5,000개 데이터에서 트리가 너무 깊어져 3% 이상치를 억지로 외우는 것 방지
+         min_samples_leaf=5,   # 리프 노드에 최소 5개 이상의 샘플이 있도록 제한하여 오버피팅 차단
+         random_state=42
+     ),
+     
+     # 6. 부스팅 앙상블 회귀 (XGBoost)
+     "XGBoost": XGBRegressor(
+         n_estimators=100,
+         learning_rate=0.05,   # 3%의 미세한 변화를 정밀하게 추적하기 위해 학습률 하향 (0.1 -> 0.05)
+         max_depth=4,          # 과적합 방지를 위해 트리 깊이를 얇게 조정
+         random_state=42
+     ),
+     
+     # 7. 부스팅 앙상블 회귀 (LightGBM)
+     "LightGBM": LGBMRegressor(
+         n_estimators=100,
+         learning_rate=0.05,   # 세밀한 보폭
+         num_leaves=15,        # 5,000개 데이터 규모에 맞게 트리 복잡도를 31에서 15로 축소
+         min_child_samples=10, # 적은 데이터 영역(3%)도 최소한의 규칙으로 반영될 수 있도록 설정
+         verbosity=-1,
+         random_state=42
+     )}
+   
+    y=df[target] 
+    
+    # 꼭 지운다 
+    '''    
+    ---  지워야 하는 feature
+    Depo_THK: POST THK AVG, POST PC, Particle
+    Particle: POST PC, POST THK AVG, Depo_THK
+    
+    ----- 살려두고 학습에 사용해야 하는 컬럼 (Features):
+    PRE PC (공정 전 데이터이므로 사용 가능)
+    PRE THK AVG (공정 전 데이터이므로 사용 가능)
+    RF Power, Precursor flow rate, Chamber pressure 등의 순수 공정 센서 데이터
+    '''
+    cols= df.columns[:-4].tolist() 
+    cols.remove('POST THK AVG')
+    cols.remove('POST PC') 
+    
+    feature_cols = df[cols].select_dtypes(include='number').columns.tolist()
+   
+   
+    
+    #########  model 전처리   
+    # 1. 데이터 분할 
+    X_train, X_test, y_train, y_test = train_test_split(df[feature_cols], y, test_size=0.2, random_state=42)
+    
+    # 2. 스케일러 선언 및 적용
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)  # Train 데이터로 fit & transform
+    X_test_scaled = scaler.transform(X_test)        # Test 데이터는 transform만
+    
+    # 결과를 담을 리스트
+    results = []
+    
+    # 3. 루프를 이용한 학습 및 예측 (수정된 부분)
+    for name, model in models.items():
+        # ★ 중요: 정규화된 데이터(X_train_scaled)로 학습해야 합니다.
+        model.fit(X_train_scaled, y_train)
+        
+        # ★ 중요: 예측할 때도 정규화된 데이터(X_test_scaled)를 넣어줘야 합니다.
+        y_pred = model.predict(X_test_scaled)
+        
+    # results 리스트에 append 하시면 됩니다.
+        # 성능 지표 계산
+        mae = mean_absolute_error(y_test, y_pred)
+        mse = mean_squared_error(y_test, y_pred)
+        rmse = np.sqrt(mse)
+        r2 = r2_score(y_test, y_pred)
+        
+        # 결과 저장
+        results.append({
+            "Model명": name,
+            "model" : model,
+            "scaler" : scaler,
+            "MAE": mae,   #MAE (Mean Absolute Error, 평균 절대 오차)
+            "RMSE": rmse, #RMSE (Root Mean Squared Error, 평균 제곱근 오차)
+            "R2 Score": r2, #R2 Score (R-Squared, 결정 계수)
+            "y_test": y_test,
+            "y_pred": y_pred,
+            "feature_cols" : feature_cols
+        })
+        
+         
+        
+        
+    # 4. 결과 테이블 생성 및 출력 (R2 Score가 높을수록 좋은 모델)
+    df_results = pd.DataFrame(results).sort_values(by='R2 Score', ascending=False)
+    fig = plt.figure(figsize=(10,10))  # (width, height)
+    count=1
+    for row in range(len(df_results)) :
+        plt.subplot(4, 3, count)
+        count +=1
+        # 산점도 그리기
+        rows=df_results.iloc[row]
+        
+        plt.scatter(x=rows['y_test'], y=rows['y_pred'], alpha=0.5)
+        
+        # 기준선 (y=x) 그리기
+        line_coords = [y_test.min(), y_test.max()]
+        plt.plot(line_coords, line_coords, color='red', linestyle='--', lw=2, label='Perfect Prediction')
+        
+        plt.xlabel('Actual Values (y_test)')
+        plt.ylabel('Predicted Values (y_pred)')
+        plt.title(f"{target}:{rows['Model명']}[{rows['R2 Score']:.6f}]")
+        plt.legend()
+        plt.grid(True)
+        
+    plt.tight_layout()
+    
+    
+    # plt.show()
+    # 파일로 저장
+ 
+    df_results = df_results.reset_index(drop=True)
+    print(df_results)
+    setmodel=df_results.loc[0]
+    t_name=setmodel['Model명']
+    print(t_name)
+    joblib.dump(setmodel, f'model/linear_{target}.pkl')    
+ 
+    
+    return fig, df_results[['Model명','MAE','RMSE','R2 Score']]
+# %%
+
+
+
+def linear_predict(df, target, sigma):    
+    # 저장된 파일 읽음
+    results = joblib.load(f'model/linear_{target}.pkl')
+    model=results['model']  
+    scaler=results['scaler']   
+    feature_cols=results["feature_cols"]   #model 생성시 기준 columns
+    y_true=df[target]    
+    
+    X_scaled=scaler.transform(df[feature_cols])    # scaler 저장 되어 있는 방법으로 정규화 
+    y_pred=model.predict(X_scaled)
+   
+    # 성능 지표 계산
+    feature_cols.append(target)
+    # 2. 잔차(오차) 계산
+    residuals = y_true - y_pred
+    # 3. 오차의 표준편차(Sigma) 계산
+    residual_mean = np.mean(residuals)
+    residual_std = np.std(residuals)
+   
+    # 4. 이상치 판단 임계치 설정 (1.5-Sigma 원칙 적용)
+    threshold_upper = residual_mean + (sigma * residual_std)
+    threshold_lower = residual_mean - (sigma * residual_std)
+    print(threshold_upper, threshold_lower)
+    # 5. 이상치 분류 (임계치를 벗어나면 0(false), 정상이면 1(true))
+    # Particle의 경우 음수가 없으므로 upper 영역 위주로 필터링 가능
+    is_outlier = ((residuals <= threshold_upper) & (residuals >= threshold_lower))
+    
+    df_result = pd.DataFrame({
+        # 'Actual': y_true,   # df[target] 와 같음
+        'Predicted': y_pred,
+        'Residual': residuals,
+        'Is_Outlier': is_outlier.astype(int) # True/False를 1/0으로 변환
+    })
+    
+    df_result=pd.concat([df[feature_cols], df_result], axis=1)
+    
+    # 6. 이상치 데이터만 쏙 뽑아내기 (대시보드 출력용 df_anormal 생성)
+    df_anormal = df_result[df_result['Is_Outlier'] == 0]
+   
+   
+  
+        
+    return df_anormal
+    
+  
+       
     
     
     
