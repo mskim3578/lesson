@@ -6,7 +6,10 @@ Created on Fri Oct 16 10:59:10 2026
 """
 
 import pandas as pd
+
 import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import IsolationForest
 from sklearn.decomposition import PCA
@@ -21,17 +24,31 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 from sklearn.linear_model import LinearRegression, Ridge, Lasso, ElasticNet
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-
-
-import matplotlib.pyplot as plt
-import seaborn as sns
 import joblib
+import warnings
+import os
+import matplotlib.font_manager as fm
+warnings.filterwarnings('ignore')
 
 
 #  pip install scikit-learn
 #  pip install xgboost lightgbm
 
+# Streamlit Cloud(Linux) 환경 나눔고딕 폰트 파일 경로
+nanum_path = '/usr/share/fonts/truetype/nanum/NanumGothic.ttf'
+if os.path.exists(nanum_path):
+    # 1. 서버(Linux) 환경: 폰트 파일 직접 등록
+    fm.fontManager.addfont(nanum_path)
+    plt.rc('font', family='NanumGothic')
+else:
+    # 2. 로컬 PC(Windows/Mac) 환경 예외 처리
+    try:
+        plt.rc('font', family='Malgun Gothic')  # Windows
+    except:
+        plt.rc('font', family='AppleGothic')   # Mac
 
+# 음수 기호(-) 깨짐 방지
+plt.rcParams['axes.unicode_minus'] = False
 
 # %%
 def load_csv(CSV_PATH="data/semi_process_data2.csv"):           
@@ -69,6 +86,129 @@ df_all=load_csv()
 
 
 '''  
+    
+# %%    
+
+def hist_pro(df_number):
+    count=1 
+    wid=3 
+    heig=len(df_number.columns)//wid + 1
+    
+  # 1. fig, axes 분해 및 count 초기화
+    fig, axes = plt.subplots(heig, wid, figsize=(10, 20))
+    count = 1 
+    
+    for col in df_number.columns:
+        t_mean = df_number[col].mean()
+        t_ucl = t_mean + (3 * df_number[col].std())
+        t_lcl = t_mean - (3 * df_number[col].std())        
+        if ((df_number[col].max() > t_ucl) |
+            (df_number[col].min() < t_lcl)) :
+            titlecolor = 'red'
+            titlename = col + ': 이상치 확인'
+        else :
+            titlecolor = 'black'
+            titlename = col 
+            
+        plt.subplot(heig, wid, count)
+        count += 1 
+        plt.title(titlename, fontsize=8, color=titlecolor)
+        
+        # 히스토그램 그리기
+        plt.hist(df_number[col], color='skyblue', edgecolor='black')
+        
+        # (선택 사항) 계산해둔 평균과 3-Sigma(UCL, LCL) 수직선 추가
+        plt.axvline(t_mean, color='red', linestyle='--', linewidth=1, label='Mean')
+        plt.axvline(t_ucl, color='orange', linestyle=':', linewidth=1, label='UCL')
+        plt.axvline(t_lcl, color='orange', linestyle=':', linewidth=1, label='LCL')
+        
+    plt.tight_layout()
+    return fig
+
+
+def line_pro(df_number):
+    count=1 
+    wid=3 
+    heig=len(df_number.columns)//wid + 1
+    # 1. fig, axes 분해 및 count 초기화
+    fig, axes = plt.subplots(heig, wid, figsize=(10, 20))
+    count = 1 
+    for col in df_number.columns:
+        t_mean = df_number[col].mean()
+        t_ucl = t_mean + (3 * df_number[col].std())
+        t_lcl = t_mean - (3 * df_number[col].std())        
+        if ((df_number[col].max() > t_ucl) |
+            (df_number[col].min() < t_lcl)) :
+            titlecolor = 'red'
+            titlename = col + ': 이상치 확인'
+        else :
+            titlecolor = 'black'
+            titlename = col 
+            
+        plt.subplot(heig, wid, count)
+        count += 1 
+        plt.title(titlename, fontsize=8, color=titlecolor)
+        
+        plt.plot(range(len(df_number[col])), df_number[col])  
+        plt.axhline(y=t_ucl , color='r', linestyle='dashed')
+        plt.axhline(y=t_lcl , color='r', linestyle='dashed')
+        
+             
+    
+    plt.tight_layout()
+    return fig
+
+'''
+line_pro(df)
+hist_pro(df[['SiO2 Under SiN depo THK',
+       'SiO2 Under SiN CMP THK', 'etch RF reflect power']])
+'''
+
+# %%
+def corr_pro(df, target):
+    # 1. 상관계수 행렬 계산 (절대값 적용)    
+    
+    fig, ax = plt.subplots(2, 1, figsize=(10, 20))        
+    tdf = df[df.columns[3:-2]].select_dtypes(include='number')   
+    print(tdf.columns)
+    
+    # 두개의 타겟 간에 상관 관계가 명 확함
+    # if target == 'Depo_THK':
+    #     del tdf['Particle']
+    # else :
+    #     del tdf['Depo_THK']
+        
+        
+    corr_matrix = tdf.corr()[target].abs()
+    # threshold = 0.1
+    # filtered_corr = corr_matrix[corr_matrix > threshold]
+    sorted_cols = corr_matrix.sort_values(ascending=False).index
+    # print(filtered_corr)
+    
+    
+    # 삼각형 마스크 생성 (중복 정보 제거를 위해 윗부분을 가림)
+    # mask = np.triu(np.ones_like(filtered_corr, dtype=bool))
+    
+    
+    sns.heatmap(df[sorted_cols].corr(), 
+                annot=True,           # 숫자 표시
+                fmt=".2f",            # 소수점 둘째자리까지
+                cmap='YlGnBu',        # 색상 테마 (Yellow-Green-Blue 혼합으로 부드러운 전개를 보여줌.)
+                ax=ax[0], # 특정 서브플롯 위치 지정
+                # mask=mask,            # 마스크 적용 (heatmap 일부  chart를 아보이게 한다 )
+                linewidths=0.5,       # 칸 사이 구분선
+                cbar_kws={"shrink": .8}) # 컬러바 크기 조절
+   
+    plt.title(f"공정 변수 간 상관관계 히트맵 (정렬 기준: {target})", fontsize=15, pad=20)
+    # plt.show()      
+   
+    ax[1].plot(range(len(df)), tdf['Particle'], label='Particle' )
+    ax[1].plot(range(len(df)), tdf['Depo_THK'], label='Depo_THK')
+    ax[1].set_title('Particle and Depo_THK')
+    ax[1].legend()
+    plt.tight_layout()    
+    return fig, sorted_cols[1:]   #맨 앞의 target 컬럼은 제외 한다
+
 
 # %%  
 def binary_model(df, target):   
@@ -414,9 +554,17 @@ def linear_model(df, target):
  
     
     return fig, df_results[['Model명','MAE','RMSE','R2 Score']]
+
+
+'''
+linear_model(df_all, 'Depo_THK')
+linear_model(df_all, 'Particle')
+'''
 # %%
 
-
+'''
+linear_predict(df_all, 'Depo_THK', 1.5)
+'''
 
 def linear_predict(df, target, sigma):    
     # 저장된 파일 읽음
@@ -456,10 +604,7 @@ def linear_predict(df, target, sigma):
     
     # 6. 이상치 데이터만 쏙 뽑아내기 (대시보드 출력용 df_anormal 생성)
     df_anormal = df_result[df_result['Is_Outlier'] == 0]
-   
-   
-  
-        
+       
     return df_anormal
     
   
