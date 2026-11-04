@@ -1,96 +1,33 @@
-import streamlit as st
-import sys
-from streamlit.web import cli as stcli
-from tensorflow.keras.models  import load_model
-import cv2
 import numpy as np
-import os
-from PIL import Image
-
-class_names=['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
-         'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
-
-@st.cache_data
-def load_data():
-    return load_model('model/numberMnist.keras'), \
-                    load_model('model/fashionMnist.keras')
-
-number_model, fashion_model = load_data()
-
-upload_dir = "upload"
-os.makedirs(upload_dir, exist_ok=True)
+import pandas as pd
+import matplotlib.pyplot as plt
 
 
-def prediction(filename, model):
-    img=cv2.imread(filename)
-    x=cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    x=x.reshape(1, 28*28)/255
-    results = model.predict(x)
-    result = np.argmax(results, axis=1) # (1,1)
-    print(result)
-    return result[0]
+df=pd.read_csv("data/test_100.csv")
+df.info()
+del df['Unnamed: 0']
 
-# 1. 페이지 설정
-
-st.set_page_config(page_title='letuin', layout='wide')
-
-
-
-def main():
-    
-    menus = ["1. numberMnist", "2. fashionMnist", "3. menu3"]
-    menu=st.sidebar.radio("렛유인", menus)
-    
-    if menu == menus[0]:
-        st.markdown(menu)
-        
-        # 파일 업로더 생성
-        uploaded_file = st.file_uploader(
-           "이미지 파일을 선택하세요 (jpg, jpeg, png)", type=["jpg", "jpeg", "png"]
-         )
-        if uploaded_file :
-            # 업로드된 이미지 열기
-            image = Image.open(uploaded_file)
-            # 저장할 파일 경로 설정 (uploaded_file.name으로 원래 파일명 사용)
-            file_path = os.path.join(upload_dir, uploaded_file.name)
-            image.save(file_path)
-            # 업로드한 원본 이미지 화면에 표시
-            st.markdown(f"업로드된 원본 이미지 : {file_path}")
-            st.image(image, width=100)
-            
-            y=prediction(file_path, number_model)
-            st.markdown(f'### {y}')
-        
-        
-        
-        
-        
-        
-    elif menu == menus[1]:
-        st.markdown(menu)
-        
-        # 파일 업로더 생성
-        uploaded_fashion = st.file_uploader(
-           "이미지 파일을 선택하세요 (jpg, jpeg, png)", type=["jpg", "jpeg", "png"]
-         )
-        if uploaded_fashion :
-            # 업로드된 이미지 열기
-            image = Image.open(uploaded_fashion)
-            # 저장할 파일 경로 설정 (uploaded_file.name으로 원래 파일명 사용)
-            file_path = os.path.join(upload_dir, uploaded_fashion.name)
-            image.save(file_path)
-            # 업로드한 원본 이미지 화면에 표시
-            st.markdown(f"업로드된 원본 이미지 : {file_path}")
-            st.image(image, width=100)
-            class_names=['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
-                     'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
-            y=prediction(file_path, fashion_model)
-            st.markdown(f'### {class_names[y]}')
-        
-        
-if __name__ == "__main__": # 전체(external terminal) 실행을 했나?
-     if st.runtime.exists():
-         main()
-     else:
-         sys.argv = ['streamlit', "run", sys.argv[0]]
-         sys.exit(stcli.main())    
+num_cols=len(df.columns)  #1
+def plot_all_columns(df, chart_type="line", figsize=(20, 25)):
+     plt.figure(figsize=figsize)   
+    # 20개 컬럼을 4열 기준으로 배치하기 위한 행(row) 수 계산
+     chart_col = 4
+     chart_row = (num_cols // chart_col) + 1
+     count=1 
+     for i, col in enumerate(df.columns):
+         
+         plt.subplot(chart_row, chart_col, count)
+         count +=1
+         
+         if chart_type  == 'line':
+             plt.plot(df.index, df[col])
+         elif chart_type  == 'scatter':
+             plt.scatter(df.index, df[col])
+         else:
+             plt.line(df.index, df[col])
+         
+     plt.tight_layout()
+     plt.show()   
+plot_all_columns(df, 'line')         
+         
+  
