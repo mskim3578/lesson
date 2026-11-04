@@ -48,17 +48,18 @@ def main():
         uploaded_file = st.file_uploader(
            "이미지 파일을 선택하세요 (jpg, jpeg, png)", type=["jpg", "jpeg", "png"]
          )
-        # 업로드된 이미지 열기
-        image = Image.open(uploaded_file)
-        # 저장할 파일 경로 설정 (uploaded_file.name으로 원래 파일명 사용)
-        file_path = os.path.join(upload_dir, uploaded_file.name)
-        image.save(file_path)
-        # 업로드한 원본 이미지 화면에 표시
-        st.markdown(f"업로드된 원본 이미지 : {file_path}")
-        st.image(image, width=100)
-        
-        
-        
+        if uploaded_file :
+            # 업로드된 이미지 열기
+            image = Image.open(uploaded_file)
+            # 저장할 파일 경로 설정 (uploaded_file.name으로 원래 파일명 사용)
+            file_path = os.path.join(upload_dir, uploaded_file.name)
+            image.save(file_path)
+            # 업로드한 원본 이미지 화면에 표시
+            st.markdown(f"업로드된 원본 이미지 : {file_path}")
+            st.image(image, width=100)
+            
+            y=prediction(file_path, number_model)
+            st.markdown(f'### {y}')
         
         
         
@@ -67,6 +68,24 @@ def main():
         
     elif menu == menus[1]:
         st.markdown(menu)
+        
+        # 파일 업로더 생성
+        uploaded_fashion = st.file_uploader(
+           "이미지 파일을 선택하세요 (jpg, jpeg, png)", type=["jpg", "jpeg", "png"]
+         )
+        if uploaded_fashion :
+            # 업로드된 이미지 열기
+            image = Image.open(uploaded_fashion)
+            # 저장할 파일 경로 설정 (uploaded_file.name으로 원래 파일명 사용)
+            file_path = os.path.join(upload_dir, uploaded_fashion.name)
+            image.save(file_path)
+            # 업로드한 원본 이미지 화면에 표시
+            st.markdown(f"업로드된 원본 이미지 : {file_path}")
+            st.image(image, width=100)
+            class_names=['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
+                     'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
+            y=prediction(file_path, fashion_model)
+            st.markdown(f'### {class_names[y]}')
         
         
 if __name__ == "__main__": # 전체(external terminal) 실행을 했나?
